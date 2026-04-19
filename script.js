@@ -387,7 +387,7 @@ document.getElementById("downloadPDF").addEventListener("click", () => {
 
   console.log("Saved TOTAL:", result.total); // 👈 ADD THIS
 
- fetch("http://localhost:3000/generate-pdf", {
+ fetch("https://formsy-calculator.onrender.com/generate-pdf", {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
