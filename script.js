@@ -436,7 +436,7 @@ document.getElementById("sendQuote").addEventListener("click", () => {
     return;
   }
 
-  fetch("http://localhost:3000/send-quote", {
+  fetch("https://formsy-calculator.onrender.com/send-quote", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
