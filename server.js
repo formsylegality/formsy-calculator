@@ -43,7 +43,10 @@ app.post("/generate-pdf", async (req, res) => {
     const data = req.body;
     const { quoteNo } = req.body;
 
-    const browser = await puppeteer.launch({ headless: "new" });
+    const browser = await puppeteer.launch({
+  headless: "new",
+  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+});
     const page = await browser.newPage();
 
     // 🔥 FIX: SET DATA BEFORE PAGE LOAD
@@ -92,7 +95,10 @@ app.post("/send-quote", async (req, res) => {
     const fileName = `Formsy_${quoteNo}_${Date.now()}.pdf`;
     const filePath = path.join(__dirname, fileName);
 
-    const browser = await puppeteer.launch({ headless: "new" });
+    const browser = await puppeteer.launch({
+  headless: "new",
+  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+});
     const page = await browser.newPage();
 
     // 🔥 FIX: SET DATA BEFORE PAGE LOAD
