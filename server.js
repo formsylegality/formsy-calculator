@@ -52,7 +52,7 @@ app.post("/generate-pdf", async (req, res) => {
     }, data);
 
     // 🔥 FIX: LOAD PAGE AFTER DATA
-    await page.goto(`http://localhost:${PORT}/quotation.html`, {
+    await page.goto(`http://127.0.0.1:${PORT}/quotation.html`, {
   waitUntil: "domcontentloaded"
 });
     await page.waitForSelector(".total-amount");
@@ -101,7 +101,7 @@ app.post("/send-quote", async (req, res) => {
     }, req.body);
 
     // 🔥 FIX: LOAD PAGE AFTER DATA
-    await page.goto(`http://localhost:${PORT}/quotation.html`, {
+    await page.goto(`http://127.0.0.1:${PORT}/quotation.html`, {
   waitUntil: "domcontentloaded"
 });
     await page.waitForSelector(".total-amount");
