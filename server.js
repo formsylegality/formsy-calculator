@@ -48,11 +48,20 @@ app.post("/generate-pdf", async (req, res) => {
     if (!data?.input || !data?.result) {
   return res.status(400).send("Invalid request data");
 }
-    
+ console.log("STARTING PUPPETEER...");   
  const browser = await puppeteer.launch({
-  headless: "new",
-  args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  headless: true,
+  args: [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    "--no-first-run",
+    "--no-zygote",
+    "--single-process"
+  ]
 });
+    console.log("BROWSER LAUNCHED");
     const page = await browser.newPage();
 
     // 🔥 FIX: SET DATA BEFORE PAGE LOAD
@@ -116,8 +125,16 @@ app.post("/send-quote", async (req, res) => {
     const filePath = path.join(__dirname, fileName);
 
  const browser = await puppeteer.launch({
-  headless: "new",
-  args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  headless: true,
+  args: [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    "--no-first-run",
+    "--no-zygote",
+    "--single-process"
+  ]
 });
     const page = await browser.newPage();
 
