@@ -1,3 +1,4 @@
+const fs = require("fs");
 require("dotenv").config();
 
 const nodemailer = require("nodemailer");
@@ -43,6 +44,10 @@ app.post("/generate-pdf", async (req, res) => {
     const data = req.body;
     const { quoteNo } = req.body;
 
+    if (!data?.input || !data?.result) {
+  return res.status(400).send("Invalid request data");
+}
+    
     const browser = await puppeteer.launch({
   headless: "new",
   args: ["--no-sandbox", "--disable-setuid-sandbox"]
@@ -50,17 +55,14 @@ app.post("/generate-pdf", async (req, res) => {
     const page = await browser.newPage();
 
     // 🔥 FIX: SET DATA BEFORE PAGE LOAD
-    await page.evaluateOnNewDocument((data) => {
-      localStorage.setItem("formsyQuote", JSON.stringify(data));
-    }, data);
 
     // 🔥 FIX: LOAD PAGE AFTER DATA
     const htmlContent = `
 <html>
   <body>
     <h1>Quotation ${quoteNo}</h1>
-    <p>Client: ${input.clientName}</p>
-    <p>Total: ₹${result.total}</p>
+    <p>Client: ${data.input.clientName}</p>
+    <p>Total: ₹${data.result.total}</p>
   </body>
 </html>
 `;
@@ -80,7 +82,9 @@ await page.setContent(htmlContent, {
 
     await browser.close();
 
-    res.download(filePath, fileName);
+res.download(filePath, fileName, () => {
+  fs.unlink(filePath, () => {}); // delete after download
+});
 
   } catch (error) {
     console.error("❌ Error generating PDF:", error);
@@ -96,6 +100,11 @@ await page.setContent(htmlContent, {
 app.post("/send-quote", async (req, res) => {
   try {
     const { input, result, quoteNo } = req.body;
+   
+    if (!input || !result) {
+  return res.status(400).send("Invalid request data");
+}
+    
     console.log("FULL BODY:", req.body);
     console.log("SEND HIT");
     console.log("Email:", input?.clientEmail);
@@ -111,9 +120,7 @@ app.post("/send-quote", async (req, res) => {
     const page = await browser.newPage();
 
     // 🔥 FIX: SET DATA BEFORE PAGE LOAD
-    await page.evaluateOnNewDocument((data) => {
-      localStorage.setItem("formsyQuote", JSON.stringify(data));
-    }, req.body);
+    
 
     // 🔥 FIX: LOAD PAGE AFTER DATA
     const htmlContent = `
@@ -142,6 +149,7 @@ await page.setContent(htmlContent, {
     await transporter.sendMail({
       from: '"Formsy" <sales@formsy.in>',
       to: input.clientEmail,
+      cc: "formsylegality@gmail.com",
       subject: `Quotation ${quoteNo} for ${input.companyType} from Formsy`,
       text: `Hi ${input.clientName},
 
@@ -149,7 +157,11 @@ Thank you for your interest in Formsy.
 
 Please find attached the quotation (${quoteNo}) for your requirement.
 
+Company Type: ${input.companyType}
+
 Total Amount: ₹${result.total}
+
+If you have any concerns, please reach out to us at +91 8448729780.
 
 Best regards,  
 Formsy Team`,
@@ -159,7 +171,9 @@ Formsy Team`,
           path: filePath
         }
       ]
-    });
+    }
+                               fs.unlink(filePath, () => {});
+                              
 
     res.send("Quote sent successfully");
 
