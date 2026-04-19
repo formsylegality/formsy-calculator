@@ -59,8 +59,8 @@ app.post("/generate-pdf", async (req, res) => {
 <html>
   <body>
     <h1>Quotation ${quoteNo}</h1>
-    <p>Client: ${data.input.clientName}</p>
-    <p>Total: ₹${data.result.total}</p>
+    <p>Client: ${input.clientName}</p>
+    <p>Total: ₹${result.total}</p>
   </body>
 </html>
 `;
@@ -68,7 +68,6 @@ app.post("/generate-pdf", async (req, res) => {
 await page.setContent(htmlContent, {
   waitUntil: "domcontentloaded"
 });
-    await page.waitForSelector(".total-amount");
 
     const fileName = `Formsy_${quoteNo}.pdf`;
     const filePath = path.join(__dirname, fileName);
@@ -121,8 +120,8 @@ app.post("/send-quote", async (req, res) => {
 <html>
   <body>
     <h1>Quotation ${quoteNo}</h1>
-    <p>Client: ${data.input.clientName}</p>
-    <p>Total: ₹${data.result.total}</p>
+    <p>Client: ${input.clientName}</p>
+    <p>Total: ₹${result.total}</p>
   </body>
 </html>
 `;
@@ -130,7 +129,7 @@ app.post("/send-quote", async (req, res) => {
 await page.setContent(htmlContent, {
   waitUntil: "domcontentloaded"
 });
-    await page.waitForSelector(".total-amount");
+  
     await page.pdf({
       path: filePath,
       format: "A4",
