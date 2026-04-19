@@ -153,6 +153,7 @@ app.post("/send-quote", async (req, res) => {
   </body>
 </html>
 `;
+  const data = req.body;
 await page.evaluateOnNewDocument((data) => {
   localStorage.setItem("formsyQuote", JSON.stringify(data));
 }, data);
