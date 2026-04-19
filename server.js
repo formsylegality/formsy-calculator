@@ -55,7 +55,17 @@ app.post("/generate-pdf", async (req, res) => {
     }, data);
 
     // 🔥 FIX: LOAD PAGE AFTER DATA
-    await page.goto(`http://127.0.0.1:${PORT}/quotation.html`, {
+    const htmlContent = `
+<html>
+  <body>
+    <h1>Quotation ${quoteNo}</h1>
+    <p>Client: ${data.input.clientName}</p>
+    <p>Total: ₹${data.result.total}</p>
+  </body>
+</html>
+`;
+
+await page.setContent(htmlContent, {
   waitUntil: "domcontentloaded"
 });
     await page.waitForSelector(".total-amount");
@@ -107,7 +117,17 @@ app.post("/send-quote", async (req, res) => {
     }, req.body);
 
     // 🔥 FIX: LOAD PAGE AFTER DATA
-    await page.goto(`http://127.0.0.1:${PORT}/quotation.html`, {
+    const htmlContent = `
+<html>
+  <body>
+    <h1>Quotation ${quoteNo}</h1>
+    <p>Client: ${data.input.clientName}</p>
+    <p>Total: ₹${data.result.total}</p>
+  </body>
+</html>
+`;
+
+await page.setContent(htmlContent, {
   waitUntil: "domcontentloaded"
 });
     await page.waitForSelector(".total-amount");
