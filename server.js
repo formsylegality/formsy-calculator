@@ -89,7 +89,7 @@ res.download(filePath, fileName, () => {
 fs.unlink(filePath, (err) => {
   if (err) console.log("Cleanup error:", err);
 });
-
+});
   } catch (error) {
     console.error("❌ Error generating PDF:", error);
     res.status(500).send("Error generating PDF");
