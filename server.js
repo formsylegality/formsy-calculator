@@ -50,10 +50,10 @@ app.post("/generate-pdf", async (req, res) => {
   return res.status(400).send("Invalid request data");
 }
     
-    const browser = await puppeteer.launch({
+ const browser = await puppeteer.launch({
   args: chromium.args,
-  executablePath: await chromium.executablePath,
-  headless: chromium.headless,
+  executablePath: await chromium.executablePath || "/usr/bin/chromium-browser",
+  headless: true,
 });
     const page = await browser.newPage();
 
@@ -86,7 +86,8 @@ await page.setContent(htmlContent, {
     await browser.close();
 
 res.download(filePath, fileName, () => {
-  fs.unlink(filePath, () => {}); // delete after download
+fs.unlink(filePath, (err) => {
+  if (err) console.log("Cleanup error:", err);
 });
 
   } catch (error) {
@@ -116,10 +117,10 @@ app.post("/send-quote", async (req, res) => {
     const fileName = `Formsy_${quoteNo}_${Date.now()}.pdf`;
     const filePath = path.join(__dirname, fileName);
 
-    const browser = await puppeteer.launch({
+  const browser = await puppeteer.launch({
   args: chromium.args,
-  executablePath: await chromium.executablePath,
-  headless: chromium.headless,
+  executablePath: await chromium.executablePath || "/usr/bin/chromium-browser",
+  headless: true,
 });
     const page = await browser.newPage();
 
@@ -176,8 +177,9 @@ Team Formsy`,
         }
       ]
     });
-                               fs.unlink(filePath, () => {});
-                              
+   fs.unlink(filePath, (err) => {
+  if (err) console.log("Cleanup error:", err);
+});
 
     res.send("Quote sent successfully");
 
