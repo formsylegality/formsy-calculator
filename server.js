@@ -3,8 +3,7 @@ require("dotenv").config();
 
 const nodemailer = require("nodemailer");
 const express = require("express");
-const puppeteer = require("puppeteer-core");
-const chromium = require("chrome-aws-lambda");
+const puppeteer = require("puppeteer");
 
 const path = require("path");
 const cors = require("cors");
@@ -51,9 +50,8 @@ app.post("/generate-pdf", async (req, res) => {
 }
     
  const browser = await puppeteer.launch({
-  args: chromium.args,
-  executablePath: await chromium.executablePath || "/usr/bin/chromium-browser",
-  headless: true,
+  headless: "new",
+  args: ["--no-sandbox", "--disable-setuid-sandbox"],
 });
     const page = await browser.newPage();
 
@@ -117,10 +115,9 @@ app.post("/send-quote", async (req, res) => {
     const fileName = `Formsy_${quoteNo}_${Date.now()}.pdf`;
     const filePath = path.join(__dirname, fileName);
 
-  const browser = await puppeteer.launch({
-  args: chromium.args,
-  executablePath: await chromium.executablePath || "/usr/bin/chromium-browser",
-  headless: true,
+ const browser = await puppeteer.launch({
+  headless: "new",
+  args: ["--no-sandbox", "--disable-setuid-sandbox"],
 });
     const page = await browser.newPage();
 
