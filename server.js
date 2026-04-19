@@ -76,9 +76,11 @@ app.post("/generate-pdf", async (req, res) => {
   </body>
 </html>
 `;
-
-await page.setContent(htmlContent, {
-  waitUntil: "domcontentloaded"
+await page.evaluateOnNewDocument((data) => {
+  localStorage.setItem("formsyQuote", JSON.stringify(data));
+}, data);
+await page.goto(`https://formsy-calculator.onrender.com/quotation.html`, {
+  waitUntil: "networkidle0"
 });
 
     const fileName = `Formsy_${quoteNo}.pdf`;
@@ -151,9 +153,11 @@ app.post("/send-quote", async (req, res) => {
   </body>
 </html>
 `;
-
-await page.setContent(htmlContent, {
-  waitUntil: "domcontentloaded"
+await page.evaluateOnNewDocument((data) => {
+  localStorage.setItem("formsyQuote", JSON.stringify(data));
+}, data);
+await page.goto(`https://formsy-calculator.onrender.com/quotation.html`, {
+  waitUntil: "networkidle0"
 });
   
     await page.pdf({
