@@ -12,6 +12,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use(express.static(__dirname));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
 console.log("ENV CHECK:", process.env.EMAIL_USER, process.env.EMAIL_PASS);
 // ✅ EMAIL TRANSPORTER
 const transporter = nodemailer.createTransport({
@@ -46,9 +52,9 @@ app.post("/generate-pdf", async (req, res) => {
     }, data);
 
     // 🔥 FIX: LOAD PAGE AFTER DATA
-    await page.goto(`file://${path.resolve("./quotation.html")}`, {
-      waitUntil: "domcontentloaded"
-    });
+    await page.goto(`http://localhost:${PORT}/quotation.html`, {
+  waitUntil: "domcontentloaded"
+});
     await page.waitForSelector(".total-amount");
 
     const fileName = `Formsy_${quoteNo}.pdf`;
@@ -95,9 +101,9 @@ app.post("/send-quote", async (req, res) => {
     }, req.body);
 
     // 🔥 FIX: LOAD PAGE AFTER DATA
-    await page.goto(`file://${path.resolve("./quotation.html")}`, {
-      waitUntil: "domcontentloaded"
-    });
+    await page.goto(`http://localhost:${PORT}/quotation.html`, {
+  waitUntil: "domcontentloaded"
+});
     await page.waitForSelector(".total-amount");
     await page.pdf({
       path: filePath,
@@ -143,6 +149,8 @@ Formsy Team`,
 // ✅ START SERVER
 // =======================================================
 
-app.listen(3000, () => {
-  console.log("🚀 Server running on http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
