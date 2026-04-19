@@ -1,0 +1,19 @@
+{
+  "input": {
+    "clientName": "Shagun",
+    "companyType": "Private Limited Company",
+    "state": "Assam",
+    "capital": 4567,
+    "directors": 2,
+    "runSelected": true,
+    "addonsSelected": ["gst"]
+  },
+  "result": {
+    "runCost": 1000,
+    "dscCost": 5000,
+    "professionalFees": 2500,
+    "govtFees": 525,
+    "filingFee": 143,
+    "total": 16168
+  }
+}

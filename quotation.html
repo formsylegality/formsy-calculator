@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Formsy - Professional Quotation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#080F21", 
+                    "secondary": "#006e1c", 
+                    "surface": "#F1F5F9",
+                    "on-surface": "#080F21",
+                    "outline-variant": "#CBD5E1",
+                    "on-primary-container": "#334155"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+    body { font-family: 'Manrope', sans-serif; }
+
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    @media print {
+        body { background: white !important; padding: 0 !important; }
+        .quotation-container { border: none !important; box-shadow: none !important; margin: 0 !important; width: 100% !important; max-width: none !important; }
+    }
+
+    #quotation {
+        width: 190mm;
+        margin: 0 auto;
+        padding: 3mm 5mm;
+        box-sizing: border-box;
+        background: white;
+    }
+
+    /* ✅ ADD THIS EXACTLY HERE (BOTTOM OF STYLE) */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: left;
+    }
+
+    th {
+        background: #080F21;
+        color: white;
+    }
+    /* ✅ FIX — Keep Terms & Conditions on same page */
+.terms-section {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  margin-top: 20px;
+}
+
+/* ============================= */
+/* ✅ CLEAN TABLE PAGINATION FIX */
+/* ============================= */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  page-break-inside: auto;
+}
+
+thead {
+  display: table-header-group;
+}
+
+tbody {
+  display: table-row-group;
+}
+
+tr {
+  page-break-inside: avoid;
+  page-break-after: auto;
+}
+
+/* ✅ ADD THIS (your missing piece) */
+tbody::after {
+  content: "";
+  display: block;
+  height: 10px;
+}
+
+thead {
+  display: table-header-group;
+}
+
+tbody {
+  display: table-row-group;
+}
+
+tr {
+  page-break-inside: avoid;
+  page-break-after: auto;
+}
+/* ============================= */
+/* ✅ FINAL PDF FIXES (ADD HERE) */
+/* ============================= */
+
+/* Page margin fix */
+@page {
+  size: A4;
+  margin: 6mm 8mm;
+}
+
+/* Ensure header repeats properly */
+thead {
+  display: table-header-group;
+}
+
+/* Prevent row breaking */
+tr {
+  page-break-inside: avoid;
+}
+
+/* Total section styling */
+.total-section {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 2px solid #e2e8f0;
+  page-break-inside: avoid;
+}
+table {
+  border-bottom: none !important;
+}
+
+table tr:last-child td {
+  border-bottom: none !important;
+}
+.amount-words {
+  text-align: right;
+  font-size: 11px;
+  margin-top: 6px;
+  color: #334155;
+  font-weight: 500;
+  font-style: italic;
+}
+.total-label {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.total-value {
+  font-weight: 800;
+  color: #15803d;
+  font-size: 16px;
+}
+
+/* Improve spacing before Terms */
+.terms-section {
+  page-break-before: auto;
+  margin-top: 30px;
+}
+.payment-section {
+  page-break-inside: avoid;
+}
+</style>
+</head>
+<body class="bg-white text-on-surface">
+<main id="quotation" class="quotation-container">
+  <!-- Main Quotation Canvas -->
+<div style="background: white;">
+<!-- Header Section -->
+<div class="p-8 md:p-10 flex justify-between items-start gap-10 border-b border-slate-200">
+<div class="space-y-6">
+<div class="flex items-center gap-4">
+<img src="assets/Formsylogo.png" style="height:50px;">
+<div>
+<h1 class="text-3xl font-extrabold text-primary tracking-tighter">Formsy</h1>
+<p class="text-sm font-semibold text-secondary tracking-wide">Simplifying Compliance &amp; Business Setup</p>
+</div>
+</div>
+<div class="space-y-1.5 text-xs font-semibold text-on-primary-container">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base text-secondary">language</span>
+                        www.formsy.in
+                    </div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base text-secondary">call</span>
+                        8448729780
+                    </div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base text-secondary">mail</span>
+                        sales@formsy.in
+                    </div>
+</div>
+</div>
+<div class="bg-slate-200/50 p-6 md:p-8 rounded-xl border border-slate-300 min-w-[280px] ml-auto">
+<h2 class="text-[10px] uppercase tracking-[0.2em] font-black text-secondary mb-4">Quotation Summary</h2>
+<div class="space-y-3">
+<div class="flex justify-between items-center text-xs">
+<span class="font-bold text-on-primary-container/70">No.</span>
+<span class="font-bold text-primary quote-id"></span>
+</div>
+<div class="flex justify-between items-center text-xs">
+<span class="font-bold text-on-primary-container/70">Date</span>
+<span class="font-bold text-primary quote-date"></span>
+</div>
+<div class="flex justify-between items-center text-xs border-t border-slate-300 pt-3">
+<span class="font-bold text-on-primary-container/70">Name</span>
+<span class="client-name text-sm font-semibold text-right"></span>
+</div>
+<div class="pt-3">
+<span class="text-[9px] uppercase tracking-widest font-black text-secondary block mb-1">Total Amount</span>
+<span class="text-2xl font-bold text-primary total-amount"></span>
+</div>
+</div>
+</div>
+</div>
+<!-- Content Section -->
+<div class="p-10 md:p-14">
+<!-- Pricing Table -->
+<div class="mb-12">
+<h3 class="text-sm font-black text-primary uppercase tracking-widest mb-6 flex items-center gap-3">
+<span class="w-6 h-[2px] bg-secondary"></span>
+                    Service Breakdown
+                </h3>
+<div class="overflow-x-auto rounded-lg shadow-sm">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-primary text-white">
+<th class="py-4 px-6 text-[10px] uppercase tracking-widest font-black border-r border-white/10">Item Description</th>
+<th class="py-4 px-6 text-[10px] uppercase tracking-widest font-black border-r border-white/10">Sub-Items</th>
+<th class="py-4 px-6 text-[10px] uppercase tracking-widest font-black text-center border-r border-white/10">Qty</th>
+<th class="py-4 px-6 text-[10px] uppercase tracking-widest font-black text-right border-r border-white/10">Rate</th>
+<th class="py-4 px-6 text-[10px] uppercase tracking-widest font-black text-right">Price</th>
+</tr>
+</thead>
+<tbody id="mainTable" class="text-[13px] font-medium text-primary divide-y divide-slate-200">
+</tbody>
+
+</table>
+</div>
+</div>
+<!-- ✅ TOTAL SECTION (OUTSIDE TABLE) -->
+<div class="total-section">
+  <span class="total-label">TOTAL</span>
+  <span class="total-value total-amount"></span>
+</div>
+<div class="amount-words"></div>
+<!-- Terms & Conditions -->
+<div class="pt-10 border-t border-slate-200 terms-section">
+<h3 class="text-[10px] uppercase tracking-[0.3em] font-black text-secondary mb-6">Terms and Conditions</h3>
+<div class="grid md:grid-cols-2 gap-x-12 gap-y-4">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-lg">verified</span>
+<p class="text-[11px] font-bold text-on-primary-container leading-relaxed">Govt fees are subject to change based on official notifications from authorities.</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-lg">schedule</span>
+<p class="text-[11px] font-bold text-on-primary-container leading-relaxed">Project timeline depends on MCA approvals and external regulatory processing times.</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-lg">payments</span>
+<p class="text-[11px] font-bold text-on-primary-container leading-relaxed">Work will commence immediately upon receipt of payment confirmation and all necessary documents.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ✅ PAYMENT DETAILS START -->
+<div class="pt-8 border-t border-slate-200 payment-section">
+  <h3 class="text-[10px] uppercase tracking-[0.3em] font-black text-secondary mb-4">
+    Payment Details
+  </h3>
+
+  <div class="grid grid-cols-2 gap-6 text-[12px] font-medium text-primary">
+
+    <div class="space-y-2">
+      <p><strong>Bank Name:</strong> <span class="bank-name"></span></p>
+      <p><strong>Account Number:</strong> <span class="account-number"></span></p>
+      <p><strong>IFSC:</strong> <span class="ifsc"></span></p>
+    </div>
+
+  </div>
+</div>
+<!-- ✅ PAYMENT DETAILS END -->
+</main>
+<script>
+  function numberToWords(num) {
+  const a = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+    "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen",
+    "Eighteen", "Nineteen"];
+
+  const b = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+  const inWords = (n) => {
+    if (n < 20) return a[n];
+    if (n < 100) return b[Math.floor(n / 10)] + " " + a[n % 10];
+    if (n < 1000) return a[Math.floor(n / 100)] + " Hundred " + inWords(n % 100);
+    if (n < 100000) return inWords(Math.floor(n / 1000)) + " Thousand " + inWords(n % 1000);
+    if (n < 10000000) return inWords(Math.floor(n / 100000)) + " Lakh " + inWords(n % 100000);
+    return "";
+  };
+
+  return inWords(num) + " Rupees Only";
+}
+
+  document.addEventListener("DOMContentLoaded", () => {
+
+  const data = JSON.parse(localStorage.getItem("formsyQuote"));
+  console.log("PDF DATA:", data);
+
+  if (!data) {
+    console.error("❌ No data found in localStorage");
+    return;
+  }
+
+  const { input, result, quoteNo } = data;
+
+  console.log("DATA:", data);
+
+  // =====================
+  // DATE + QUOTE
+  // =====================
+
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+
+  // ✅ SAVE IT IN LOCAL STORAGE DATA
+  document.querySelector(".quote-date").innerText = formattedDate;
+  document.querySelector(".quote-id").innerText = quoteNo;
+
+  // =====================
+  // CLIENT
+  // =====================
+
+  document.querySelector(".client-name").innerText =
+    input.clientName && input.clientName.trim() !== ""
+      ? input.clientName
+      : "Client";
+
+  // =====================
+  // TABLE BUILD START
+  // =====================
+
+  const table = document.getElementById("mainTable");
+  table.innerHTML = "";
+
+  const companyText = input.companyType;
+  const formattedCapital = new Intl.NumberFormat("en-IN").format(input.capital);
+const metaText = `State: ${input.state} | Authorized Capital: ₹${formattedCapital}`;
+
+  let services = [];
+
+  // RUN
+  if (input.runSelected) {
+    services.push({
+      name: "Name Approval",
+      qty: 1,
+      rate: result.runCost,
+      price: result.runCost
+    });
+  }
+
+  // DSC (ONLY IF DIRECTORS > 0)
+if (input.directors > 0) {
+  services.push({
+    name: "DSC",
+    qty: input.directors,
+    rate: 2500,
+    price: result.dscCost
+  });
+}
+
+  // PROFESSIONAL
+  services.push({
+    name: "Professional Fees",
+    qty: 1,
+    rate: result.professionalFees,
+    price: result.professionalFees
+  });
+
+  // MOA / STAMP DUTY
+  const isLLP = input.companyType.toLowerCase().includes("llp");
+
+  services.push({
+    name: isLLP ? "Stamp Duty" : "MOA AOA of the Company",
+    qty: 1,
+    rate: result.govtFees,
+    price: result.govtFees
+  });
+
+  // PAN TAN
+  services.push({
+    name: "PAN TAN of the Company",
+    qty: 1,
+    rate: 143,
+    price: result.filingFee
+  });
+
+  // =====================
+  // RENDER MAIN SERVICES
+  // =====================
+
+  services.forEach((service, index) => {
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td class="py-3 px-6 border-r border-slate-200 ${index === 0 ? 'font-bold' : ''}">
+        ${index === 0 ? `${companyText}<br><span class="text-xs text-gray-500">${metaText}</span>` : ""}
+      </td>
+
+      <td class="py-3 px-6 border-r border-slate-200 italic">
+        ${service.name}
+      </td>
+
+      <td class="py-3 px-6 text-center border-r border-slate-200">
+        ${service.qty}
+      </td>
+
+      <td class="py-3 px-6 text-right border-r border-slate-200">
+        ${service.rate}
+      </td>
+
+      <td class="py-3 px-6 text-right">
+        ${service.price}
+      </td>
+    `;
+
+    table.appendChild(row);
+  });
+
+  // =====================
+  // ADDONS
+  // =====================
+
+  const addonNames = {
+    gst: "GST Registration",
+    msme: "MSME Registration",
+    startup: "Startup India",
+    trademark: "Trademark Filing"
+  };
+
+  const addonPricing = {
+    gst: 1000,
+    msme: 1000,
+    startup: 6000,
+    trademark: 7000
+  };
+
+  input.addonsSelected.forEach(addon => {
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td class="py-3 px-6 border-r border-slate-200 font-bold">
+        ${addonNames[addon]}
+      </td>
+
+      <td class="py-3 px-6 border-r border-slate-200">-</td>
+
+      <td class="py-3 px-6 text-center border-r border-slate-200">1</td>
+
+      <td class="py-3 px-6 text-right border-r border-slate-200">
+        ${addonPricing[addon]}
+      </td>
+
+      <td class="py-3 px-6 text-right">
+        ${addonPricing[addon]}
+      </td>
+    `;
+
+    table.appendChild(row);
+  });
+
+  // =====================
+  // TOTAL
+  // =====================
+
+  document.querySelectorAll(".total-amount").forEach(el => {
+    el.innerText = "₹" + result.total;
+  });
+document.querySelector(".amount-words").innerText =
+ "Amount (in words): " + numberToWords(result.total);
+ // =====================
+// PAYMENT DETAILS
+// =====================
+
+document.querySelector(".bank-name").innerText = "AXIS Bank";
+document.querySelector(".account-number").innerText = "925020048358088";
+document.querySelector(".ifsc").innerText = "UTIB0002193";
+  
+  });
+</script>
+</body>
+</html>
