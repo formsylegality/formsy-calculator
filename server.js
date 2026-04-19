@@ -163,15 +163,15 @@ Total Amount: ₹${result.total}
 
 If you have any concerns, please reach out to us at +91 8448729780.
 
-Best regards,  
-Formsy Team`,
+Best Regards,  
+Team Formsy`,
       attachments: [
         {
           filename: fileName,
           path: filePath
         }
       ]
-    }
+    });
                                fs.unlink(filePath, () => {});
                               
 
