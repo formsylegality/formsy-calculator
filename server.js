@@ -4,7 +4,6 @@ require("dotenv").config();
 const nodemailer = require("nodemailer");
 const express = require("express");
 const puppeteer = require("puppeteer");
-
 const path = require("path");
 const cors = require("cors");
 
@@ -13,75 +12,89 @@ const app = express();
 // ✅ Middleware
 app.use(cors());
 app.use(express.json());
-
 app.use(express.static(__dirname));
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-console.log("ENV CHECK:", process.env.EMAIL_USER, process.env.EMAIL_PASS);
 // ✅ EMAIL TRANSPORTER
 const transporter = nodemailer.createTransport({
   host: "smtp.hostinger.com",
   port: 465,
   secure: true,
   auth: {
-  user: process.env.EMAIL_USER,
-  pass: process.env.EMAIL_PASS
-
-}
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
 });
 
+// =======================================================
+// 🔥 COMMON PUPPETEER LAUNCH (REUSABLE)
+// =======================================================
+
+async function launchBrowser() {
+  try {
+    console.log("Launching Puppeteer...");
+
+    return await puppeteer.launch({
+      headless: true,
+      timeout: 60000,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--no-first-run",
+        "--no-zygote",
+        "--single-process"
+      ]
+    });
+
+  } catch (err) {
+    console.log("Retrying Puppeteer launch...");
+
+    return await puppeteer.launch({
+      headless: true,
+      timeout: 60000,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"]
+    });
+  }
+}
 
 // =======================================================
-// ✅ GENERATE PDF ROUTE
+// ✅ GENERATE PDF
 // =======================================================
 
 app.post("/generate-pdf", async (req, res) => {
   try {
-    console.log("Incoming QuoteNo:", req.body.quoteNo);
-
     const data = req.body;
-    const { quoteNo } = req.body;
+    const { quoteNo } = data;
 
     if (!data?.input || !data?.result) {
-  return res.status(400).send("Invalid request data");
-}
- console.log("STARTING PUPPETEER...");   
- const browser = await puppeteer.launch({
-  headless: true,
-  args: [
-    "--no-sandbox",
-    "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage",
-    "--disable-gpu",
-    "--no-first-run",
-    "--no-zygote",
-    "--single-process"
-  ]
-});
-    console.log("BROWSER LAUNCHED");
+      return res.status(400).send("Invalid request data");
+    }
+
+    const browser = await launchBrowser();
     const page = await browser.newPage();
 
-    // 🔥 FIX: SET DATA BEFORE PAGE LOAD
+    page.setDefaultNavigationTimeout(0);
 
-    // 🔥 FIX: LOAD PAGE AFTER DATA
-    const htmlContent = `
-<html>
-  <body>
-    <h1>Quotation ${quoteNo}</h1>
-    <p>Client: ${data.input.clientName}</p>
-    <p>Total: ₹${data.result.total}</p>
-  </body>
-</html>
-`;
-await page.evaluateOnNewDocument((data) => {
-  localStorage.setItem("formsyQuote", JSON.stringify(data));
-}, data);
-await page.goto(`https://formsy-calculator.onrender.com/quotation.html`, {
-  waitUntil: "networkidle0"
-});
+    // ✅ LOAD YOUR ORIGINAL HTML (NO CHANGE IN UI)
+    const html = fs.readFileSync(
+      path.join(__dirname, "quotation.html"),
+      "utf8"
+    );
+
+    await page.setContent(html, { waitUntil: "domcontentloaded" });
+
+    // ✅ PASS DATA (IMPORTANT)
+    await page.evaluate((data) => {
+      localStorage.setItem("formsyQuote", JSON.stringify(data));
+    }, data);
+
+    // ✅ WAIT FOR RENDER
+    await page.waitForSelector(".total-amount");
 
     const fileName = `Formsy_${quoteNo}.pdf`;
     const filePath = path.join(__dirname, fileName);
@@ -94,73 +107,53 @@ await page.goto(`https://formsy-calculator.onrender.com/quotation.html`, {
 
     await browser.close();
 
-res.download(filePath, fileName, () => {
-fs.unlink(filePath, (err) => {
-  if (err) console.log("Cleanup error:", err);
-});
-});
+    res.download(filePath, fileName, () => {
+      fs.unlink(filePath, () => {});
+    });
+
   } catch (error) {
     console.error("❌ Error generating PDF:", error);
     res.status(500).send("Error generating PDF");
   }
 });
 
-
 // =======================================================
-// ✅ SEND QUOTE ROUTE
+// ✅ SEND QUOTE
 // =======================================================
 
 app.post("/send-quote", async (req, res) => {
   try {
     const { input, result, quoteNo } = req.body;
-   
+
     if (!input || !result) {
-  return res.status(400).send("Invalid request data");
-}
-    
-    console.log("FULL BODY:", req.body);
-    console.log("SEND HIT");
-    console.log("Email:", input?.clientEmail);
-    console.log("Quote:", quoteNo);
+      return res.status(400).send("Invalid request data");
+    }
+
+    const data = req.body;
+
+    const browser = await launchBrowser();
+    const page = await browser.newPage();
+
+    page.setDefaultNavigationTimeout(0);
+
+    // ✅ LOAD SAME HTML
+    const html = fs.readFileSync(
+      path.join(__dirname, "quotation.html"),
+      "utf8"
+    );
+
+    await page.setContent(html, { waitUntil: "domcontentloaded" });
+
+    // ✅ PASS DATA
+    await page.evaluate((data) => {
+      localStorage.setItem("formsyQuote", JSON.stringify(data));
+    }, data);
+
+    await page.waitForSelector(".total-amount");
 
     const fileName = `Formsy_${quoteNo}_${Date.now()}.pdf`;
     const filePath = path.join(__dirname, fileName);
 
- const browser = await puppeteer.launch({
-  headless: true,
-  args: [
-    "--no-sandbox",
-    "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage",
-    "--disable-gpu",
-    "--no-first-run",
-    "--no-zygote",
-    "--single-process"
-  ]
-});
-    const page = await browser.newPage();
-
-    // 🔥 FIX: SET DATA BEFORE PAGE LOAD
-    
-
-    // 🔥 FIX: LOAD PAGE AFTER DATA
-    const htmlContent = `
-<html>
-  <body>
-    <h1>Quotation ${quoteNo}</h1>
-    <p>Client: ${input.clientName}</p>
-    <p>Total: ₹${result.total}</p>
-  </body>
-</html>
-`;
-  const data = req.body;
-await page.evaluateOnNewDocument((data) => {
-  localStorage.setItem("formsyQuote", JSON.stringify(data));
-}, data);
-await page.goto(`https://formsy-calculator.onrender.com/quotation.html`, {
-  waitUntil: "networkidle0"
-});
-  
     await page.pdf({
       path: filePath,
       format: "A4",
@@ -196,9 +189,8 @@ Team Formsy`,
         }
       ]
     });
-   fs.unlink(filePath, (err) => {
-  if (err) console.log("Cleanup error:", err);
-});
+
+    fs.unlink(filePath, () => {});
 
     res.send("Quote sent successfully");
 
@@ -207,7 +199,6 @@ Team Formsy`,
     res.status(500).send("Error sending quote");
   }
 });
-
 
 // =======================================================
 // ✅ START SERVER
