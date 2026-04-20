@@ -18,6 +18,11 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
+// ✅ 🔥 DUMMY ROUTE (IMPORTANT)
+app.get("/blank", (req, res) => {
+  res.send("<html><body></body></html>");
+});
+
 // ✅ EMAIL TRANSPORTER
 const transporter = nodemailer.createTransport({
   host: "smtp.hostinger.com",
@@ -30,13 +35,11 @@ const transporter = nodemailer.createTransport({
 });
 
 // =======================================================
-// 🔥 COMMON PUPPETEER LAUNCH (REUSABLE)
+// 🔥 COMMON PUPPETEER LAUNCH
 // =======================================================
 
 async function launchBrowser() {
   try {
-    console.log("Launching Puppeteer...");
-
     return await puppeteer.launch({
       headless: true,
       timeout: 60000,
@@ -50,10 +53,8 @@ async function launchBrowser() {
         "--single-process"
       ]
     });
-
   } catch (err) {
-    console.log("Retrying Puppeteer launch...");
-
+    console.log("Retrying Puppeteer...");
     return await puppeteer.launch({
       headless: true,
       timeout: 60000,
@@ -80,20 +81,26 @@ app.post("/generate-pdf", async (req, res) => {
 
     page.setDefaultNavigationTimeout(0);
 
-    // ✅ LOAD YOUR ORIGINAL HTML (NO CHANGE IN UI)
+    // ✅ STEP 1: LOAD DUMMY ORIGIN
+    await page.goto(`http://127.0.0.1:${PORT}/blank`);
+
+    // ✅ STEP 2: LOAD YOUR HTML
     const html = fs.readFileSync(
       path.join(__dirname, "quotation.html"),
       "utf8"
     );
 
-    await page.setContent(html, { waitUntil: "domcontentloaded" });
+    await page.evaluate((html) => {
+      document.open();
+      document.write(html);
+      document.close();
+    }, html);
 
-    // ✅ PASS DATA (IMPORTANT)
+    // ✅ STEP 3: SET DATA
     await page.evaluate((data) => {
       localStorage.setItem("formsyQuote", JSON.stringify(data));
     }, data);
 
-    // ✅ WAIT FOR RENDER
     await page.waitForSelector(".total-amount");
 
     const fileName = `Formsy_${quoteNo}.pdf`;
@@ -136,15 +143,22 @@ app.post("/send-quote", async (req, res) => {
 
     page.setDefaultNavigationTimeout(0);
 
-    // ✅ LOAD SAME HTML
+    // ✅ STEP 1: LOAD DUMMY ORIGIN
+    await page.goto(`http://127.0.0.1:${PORT}/blank`);
+
+    // ✅ STEP 2: LOAD HTML
     const html = fs.readFileSync(
       path.join(__dirname, "quotation.html"),
       "utf8"
     );
 
-    await page.setContent(html, { waitUntil: "domcontentloaded" });
+    await page.evaluate((html) => {
+      document.open();
+      document.write(html);
+      document.close();
+    }, html);
 
-    // ✅ PASS DATA
+    // ✅ STEP 3: SET DATA
     await page.evaluate((data) => {
       localStorage.setItem("formsyQuote", JSON.stringify(data));
     }, data);
@@ -162,7 +176,6 @@ app.post("/send-quote", async (req, res) => {
 
     await browser.close();
 
-    // ✅ EMAIL SEND
     await transporter.sendMail({
       from: '"Formsy" <sales@formsy.in>',
       to: input.clientEmail,
